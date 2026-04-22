@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inkwell — Premium Stationery Shop</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50:'#fff7ed',100:'#ffedd5',200:'#fed7aa',300:'#fdba74',400:'#fb923c',500:'#ff6b2c',600:'#e65214',700:'#c2410c',800:'#9a3412',900:'#7c2d12' },
+            dark: { 950:'#050505',900:'#0a0a0a',800:'#111111',700:'#1a1a1a',600:'#242424',500:'#2e2e2e',400:'#3a3a3a' }
+          },
+          fontFamily: { sans:['Inter','sans-serif'] },
+          letterSpacing: { tighter:'-0.04em', tight:'-0.025em' }
+        }
+      }
+    }
+  </script>
+  <style>
+    *{font-family:'Inter',sans-serif}
+    ::-webkit-scrollbar{width:6px}
+    ::-webkit-scrollbar-track{background:#0a0a0a}
+    ::-webkit-scrollbar-thumb{background:#2e2e2e;border-radius:3px}
+    ::-webkit-scrollbar-thumb:hover{background:#ff6b2c}
+    .page{display:none}.page.active{display:block}
+    .line-clamp-2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes scaleIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+    @keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    @keyframes slideInRight{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+    @keyframes slideOutRight{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}
+    .animate-fadeUp{animation:fadeUp 0.7s ease-out forwards}
+    .animate-fadeIn{animation:fadeIn 0.5s ease-out forwards}
+    .animate-float{animation:float 6s ease-in-out infinite}
+    .animate-marquee{animation:marquee 30s linear infinite}
+    .delay-100{animation-delay:0.1s;opacity:0}
+    .delay-200{animation-delay:0.2s;opacity:0}
+    .delay-300{animation-delay:0.3s;opacity:0}
+    .delay-400{animation-delay:0.4s;opacity:0}
+    .card-3d{transition:transform 0.4s ease,box-shadow 0.4s ease}
+    .card-3d:hover{transform:translateY(-8px);box-shadow:0 20px 60px -15px rgba(255,107,44,0.12)}
+    .card-3d:hover .card-img{transform:scale(1.08)}
+    .card-3d:hover .card-overlay{opacity:1}
+    .glass{background:rgba(17,17,17,0.6);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+    .glass-light{background:rgba(255,255,255,0.03);backdrop-filter:blur(12px)}
+    .text-gradient{background:linear-gradient(135deg,#ff6b2c,#fdba74);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .toast-enter{animation:slideInRight 0.35s ease-out forwards}
+    .toast-exit{animation:slideOutRight 0.35s ease-in forwards}
+    input:focus,textarea:focus,select:focus{outline:none}
+  </style>
+</head>
+<body class="bg-dark-900 text-white antialiased overflow-x-hidden">
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed top-24 right-6 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
+  <!-- Navigation -->
+  <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="mt-4 mx-auto flex items-center justify-between bg-dark-800/60 backdrop-blur-xl border border-white/[0.06] rounded-2xl px-6 py-3">
+        <a href="#home" class="flex items-center gap-2.5 group">
+          <div class="w-9 h-9 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl flex items-center justify-center shadow-lg shadow-brand-500/20 group-hover:shadow-brand-500/40 transition-shadow">
+            <span class="iconify text-white text-lg" data-icon="lucide:pen-tool"></span>
+          </div>
+          <span class="text-xl font-bold tracking-tight">Inkwell</span>
+        </a>
+        <div class="hidden md:flex items-center gap-1">
+          <a href="#home" class="nav-link text-sm font-medium text-gray-400 hover:text-white px-4 py-2 rounded-xl hover:bg-white/5 transition-all" data-page="home">Home</a>
+          <a href="#products" class="nav-link text-sm font-medium text-gray-400 hover:text-white px-4 py-2 rounded-xl hover:bg-white/5 transition-all" data-page="products">Products</a>
+          <a href="#about" class="nav-link text-sm font-medium text-gray-400 hover:text-white px-4 py-2 rounded-xl hover:bg-white/5 transition-all" data-page="about">About</a>
+        </div>
+        <div class="flex items-center gap-3">
+          <button id="cart-btn" class="relative p-2.5 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all" onclick="toggleCart()">
+            <span class="iconify text-xl" data-icon="lucide:shopping-bag"></span>
+            <span id="cart-count" class="absolute -top-0.5 -right-0.5 w-5 h-5 bg-gradient-to-br from-brand-500 to-brand-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg hidden">0</span>
+          </button>
+          <a href="#login" id="auth-nav-btn" class="hidden md:inline-flex items-center gap-2 bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-brand-500/20 hover:shadow-brand-500/40">
+            <span class="iconify text-base" data-icon="lucide:user"></span>
+            <span id="auth-btn-text">Sign In</span>
+          </a>
+          <button id="mobile-toggle" class="md:hidden p-2.5 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all" onclick="toggleMobileMenu()">
+            <span class="iconify text-xl" data-icon="lucide:menu"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="mobile-menu" class="hidden md:hidden mx-6 mt-2 glass border border-white/[0.06] rounded-2xl overflow-hidden">
+      <div class="p-4 flex flex-col gap-1">
+        <a href="#home" class="text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 px-4 py-3 rounded-xl transition-all" onclick="closeMobileMenu()">Home</a>
+        <a href="#products" class="text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 px-4 py-3 rounded-xl transition-all" onclick="closeMobileMenu()">Products</a>
+        <a href="#about" class="text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 px-4 py-3 rounded-xl transition-all" onclick="closeMobileMenu()">About</a>
+        <div class="border-t border-white/5 my-2"></div>
+        <a href="#login" class="text-sm font-medium text-brand-400 hover:bg-brand-500/10 px-4 py-3 rounded-xl transition-all" onclick="closeMobileMenu()" id="mobile-auth-link">Sign In</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Cart Sidebar -->
+  <div id="cart-overlay" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] hidden" onclick="toggleCart()"></div>
+  <div id="cart-sidebar" class="fixed top-0 right-0 h-full w-full max-w-md bg-dark-800/95 backdrop-blur-2xl z-[70] transform translate-x-full transition-transform duration-500 ease-out flex flex-col border-l border-white/5">
+    <div class="flex items-center justify-between p-6 border-b border-white/5">
+      <div>
+        <h3 class="text-lg font-bold">Shopping Bag</h3>
+        <p id="cart-item-count" class="text-xs text-gray-500 mt-0.5">0 items</p>
+      </div>
+      <button onclick="toggleCart()" class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all">
+        <span class="iconify text-xl" data-icon="lucide:x"></span>
+      </button>
+    </div>
+    <div id="cart-items" class="flex-1 overflow-y-auto p-6">
+      <div class="flex flex-col items-center justify-center h-full text-center">
+        <div class="w-20 h-20 bg-dark-700 rounded-full flex items-center justify-center mb-4">
+          <span class="iconify text-3xl text-gray-600" data-icon="lucide:shopping-bag"></span>
+        </div>
+        <p class="text-gray-500 text-sm">Your bag is empty</p>
+        <a href="#products" onclick="toggleCart()" class="text-sm text-brand-500 hover:text-brand-400 mt-2 transition-colors">Start shopping →</a>
+      </div>
+    </div>
+    <div id="cart-footer" class="hidden border-t border-white/5 p-6">
+      <div class="space-y-2 mb-4">
+        <div class="flex justify-between text-sm"><span class="text-gray-400">Subtotal</span><span id="cart-subtotal" class="font-medium">₹0</span></div>
+        <div class="flex justify-between text-sm"><span class="text-gray-400">Shipping</span><span class="text-green-400 font-medium">Free</span></div>
+        <div class="h-px bg-white/5 my-2"></div>
+        <div class="flex justify-between"><span class="font-semibold">Total</span><span id="cart-total" class="text-xl font-bold text-gradient">₹0</span></div>
+      </div>
+      <button class="w-full bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white font-semibold py-4 rounded-xl transition-all shadow-lg shadow-brand-500/20">
+        Proceed to Checkout
+      </button>
+      <p class="text-[10px] text-gray-600 text-center mt-3">Free shipping on orders above ₹499</p>
+    </div>
+  </div>
+
+  <!-- ==================== HOME ==================== -->
+  <div id="page-home" class="page active">
+    <!-- Hero -->
+    <section class="relative min-h-screen flex items-center overflow-hidden">
+      <img src="https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1920&q=80" alt="Beautiful stationery collection on wooden desk" class="absolute inset-0 w-full h-full object-cover object-center opacity-25 scale-105">
+      <div class="absolute inset-0 bg-gradient-to-r from-dark-900 via-dark-900/80 to-dark-900/30"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-dark-900 via-transparent to-dark-900/50"></div>
+      <div class="absolute top-20 right-20 w-[500px] h-[500px] bg-brand-500/8 rounded-full blur-[120px]"></div>
+      <div class="absolute bottom-20 left-10 w-72 h-72 bg-brand-500/5 rounded-full blur-[100px]"></div>
+
+      <div class="absolute top-32 right-[15%] hidden lg:block animate-float" style="animation-delay:-2s">
+        <div class="w-16 h-20 bg-dark-800/60 backdrop-blur border border-white/10 rounded-lg rotate-6 shadow-2xl flex items-center justify-center">
+          <span class="iconify text-brand-500/40 text-2xl" data-icon="lucide:pen-line"></span>
+        </div>
+      </div>
+      <div class="absolute bottom-40 right-[25%] hidden lg:block animate-float" style="animation-delay:-4s">
+        <div class="w-14 h-14 bg-dark-800/60 backdrop-blur border border-white/10 rounded-full shadow-2xl flex items-center justify-center -rotate-12">
+          <span class="iconify text-brand-500/40 text-xl" data-icon="lucide:book-open"></span>
+        </div>
+      </div>
+
+      <div class="relative max-w-7xl mx-auto px-6 lg:px-8 pt-32 pb-20 w-full">
+        <div class="max-w-2xl">
+          <div class="animate-fadeUp">
+            <div class="inline-flex items-center gap-2.5 bg-white/[0.04] border border-white/[0.08] rounded-full px-4 py-2 mb-8 backdrop-blur-sm">
+              <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-500 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span></span>
+              <span class="text-xs font-medium text-gray-300 tracking-wide">India's Favourite Stationery Brand</span>
+            </div>
+          </div>
+          <h1 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold tracking-tighter leading-[0.95] mb-7 animate-fadeUp delay-100">
+            Where Ideas<br>
+            <span class="text-gradient">Meet Paper</span>
+          </h1>
+          <p class="text-lg md:text-xl text-gray-400 font-light leading-relaxed max-w-lg mb-10 animate-fadeUp delay-200">
+            Discover curated notebooks, pens, and desk essentials crafted for thinkers, creators, and dreamers who care about every detail.
+          </p>
+          <div class="flex flex-wrap gap-4 animate-fadeUp delay-300">
+            <a href="#products" class="group inline-flex items-center gap-2.5 bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white text-sm font-semibold px-8 py-4 rounded-xl transition-all shadow-xl shadow-brand-500/25 hover:shadow-brand-500/40 hover:gap-3">
+              Shop Collection
+              <span class="iconify text-lg transition-transform group-hover:translate-x-0.5" data-icon="lucide:arrow-right"></span>
+            </a>
+            <a href="#about" class="inline-flex items-center gap-2 glass-light border border-white/[0.08] hover:border-white/20 text-white text-sm font-medium px-8 py-4 rounded-xl transition-all hover:bg-white/[0.06]">
+              <span class="iconify text-lg text-brand-500" data-icon="lucide:play-circle"></span>
+              Our Story
+            </a>
+          </div>
+
+          <div class="flex flex-wrap gap-8 sm:gap-12 mt-16 pt-8 border-t border-white/5 animate-fadeUp delay-400">
+            <div>
+              <div class="text-3xl sm:text-4xl font-extrabold tracking-tight">2.5K<span class="text-brand-500">+</span></div>
+              <div class="text-xs text-gray-500 mt-1.5 uppercase tracking-wider">Products</div>
+            </div>
+            <div>
+              <div class="text-3xl sm:text-4xl font-extrabold tracking-tight">18K<span class="text-brand-500">+</span></div>
+              <div class="text-xs text-gray-500 mt-1.5 uppercase tracking-wider">Happy Customers</div>
+            </div>
+            <div>
+              <div class="text-3xl sm:text-4xl font-extrabold tracking-tight">4.9<span class="text-brand-500">★</span></div>
+              <div class="text-xs text-gray-500 mt-1.5 uppercase tracking-wider">Average Rating</div>
+            </div>
+            <div>
+              <div class="text-3xl sm:text-4xl font-extrabold tracking-tight">40<span class="text-brand-500">+</span></div>
+              <div class="text-xs text-gray-500 mt-1.5 uppercase tracking-wider">Partner Brands</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+        <span class="text-[10px] uppercase tracking-[0.2em] text-gray-600">Scroll to explore</span>
+        <div class="w-5 h-8 border border-white/10 rounded-full flex justify-center pt-1.5">
+          <div class="w-1 h-2 bg-brand-500 rounded-full animate-bounce"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Marquee -->
+    <section class="py-6 border-y border-white/5 bg-dark-950 overflow-hidden">
+      <div class="animate-marquee flex items-center whitespace-nowrap">
+        <span class="text-sm font-medium text-gray-600 mx-8 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-brand-500 rounded-full"></span>Notebooks</span>
+        <span class="text-sm font-medium text-gray-600 mx-8 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-brand-500 rounded-full"></span>Fountain Pens</span>
+        <span class="text-sm font-medium text-gray-600 mx-8 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-brand-500 rounded-full"></span>Art Supplies</span>
+        <span class="text-sm font-medium text-gray-600 mx-8 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-brand-500 rounded-full"></span>Desk Organizers</span>
+        <span class="text-sm font-medium text-gray-600 mx-8 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-brand-500 rounded-full"></span>Calligraphy</span>
+        <span class="text-sm font-medium text-gray-600 mx-8 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-brand-500 rounded-full"></span>Sketch Pads</span>
+        <span class="text-sm font-medium text-gray-600 mx-8 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-brand-500 rounded-full"></span>Gift Sets</span>
+        <span class="text-sm font-medium text-gray-600 mx-8 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-brand-500 rounded-full"></span>Journals</span>
+        <span class="text-sm font-medium text-gray-600 mx-8 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-brand-500 rounded-full"></span>Notebooks</span>
+        <span class="text-sm font-medium text-gray-600 mx-8 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-brand-500 rounded-full"></span>Fountain Pens</span>
+        <span class="text-sm font-medium text-gray-600 mx-8 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-brand-500 rounded-full"></span>Art Supplies</span>
+        <span class="text-sm font-medium text-gray-600 mx-8 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-brand-500 rounded-full"></span>Desk Organizers</span>
+        <span class="text-sm font-medium text-gray-600 mx-8 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-brand-500 rounded-full"></span>Calligraphy</span>
+        <span class="text-sm font-medium text-gray-600 mx-8 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-brand-500 rounded-full"></span>Sketch Pads</span>
+        <span class="text-sm font-medium text-gray-600 mx-8 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-brand-500 rounded-full"></span>Gift Sets</span>
+        <span class="text-sm font-medium text-gray-600 mx-8 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-brand-500 rounded-full"></span>Journals</span>
+      </div>
+    </section>
+
+    <!-- Categories Bento -->
+    <section class="py-24 relative">
+      <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
+      <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12">
+          <div>
+            <span class="text-xs font-semibold text-brand-500 uppercase tracking-widest">Browse</span>
+            <h2 class="text-3xl md:text-5xl font-extrabold tracking-tighter mt-2">Shop by Category</h2>
+          </div>
+          <a href="#products" class="group inline-flex items-center gap-2 text-sm text-gray-400 hover:text-brand-500 transition-colors font-medium">
+            View all products <span class="iconify transition-transform group-hover:translate-x-1" data-icon="lucide:arrow-right"></span>
+          </a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-4 md:h-[560px]">
+          <a href="#products" onclick="filterCategory('notebooks')" class="group relative md:col-span-2 md:row-span-2 rounded-2xl overflow-hidden border border-white/5 card-3d cursor-pointer">
+            <img src="https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=800&q=80" alt="Assorted notebooks and journals stacked neatly" class="card-img absolute inset-0 w-full h-full object-cover transition-transform duration-700 opacity-50 group-hover:opacity-70">
+            <div class="absolute inset-0 bg-gradient-to-t from-dark-900 via-dark-900/40 to-transparent"></div>
+            <div class="absolute inset-0 bg-brand-500/0 group-hover:bg-brand-500/5 transition-colors duration-500"></div>
+            <div class="relative h-full flex flex-col justify-end p-8">
+              <div class="w-12 h-12 bg-brand-500/15 border border-brand-500/20 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-brand-500/25 transition-colors">
+                <span class="iconify text-brand-400 text-2xl" data-icon="lucide:book-open"></span>
+              </div>
+              <h3 class="text-2xl font-bold mb-1">Notebooks & Journals</h3>
+              <p class="text-sm text-gray-400 mb-3 max-w-xs">From minimalist dot-grid to luxurious leather-bound diaries.</p>
+              <div class="flex items-center gap-2">
+                <span class="text-sm font-semibold text-brand-400">Explore</span>
+                <span class="iconify text-brand-400 transition-transform group-hover:translate-x-1" data-icon="lucide:arrow-right"></span>
+              </div>
+            </div>
+          </a>
+          <a href="#products" onclick="filterCategory('pens')" class="group relative md:col-span-1 rounded-2xl overflow-hidden border border-white/5 card-3d cursor-pointer min-h-[200px]">
+            <img src="https://images.unsplash.com/photo-1585336261022-680e295ce3fe?w=500&q=80" alt="Elegant fountain pen with ink" class="card-img absolute inset-0 w-full h-full object-cover transition-transform duration-700 opacity-40 group-hover:opacity-60">
+            <div class="absolute inset-0 bg-gradient-to-t from-dark-900 via-dark-900/50 to-transparent"></div>
+            <div class="relative h-full flex flex-col justify-end p-6">
+              <div class="w-10 h-10 bg-brand-500/15 border border-brand-500/20 rounded-xl flex items-center justify-center mb-3">
+                <span class="iconify text-brand-400 text-xl" data-icon="lucide:pen-line"></span>
+              </div>
+              <h3 class="text-lg font-bold">Pens & Writing</h3>
+              <p class="text-xs text-gray-500 mt-1">68 items</p>
+            </div>
+          </a>
+          <a href="#products" onclick="filterCategory('art')" class="group relative md:col-span-1 rounded-2xl overflow-hidden border border-white/5 card-3d cursor-pointer min-h-[200px]">
+            <img src="https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=500&q=80" alt="Colorful watercolor paints and brushes" class="card-img absolute inset-0 w-full h-full object-cover transition-transform duration-700 opacity-40 group-hover:opacity-60">
+            <div class="absolute inset-0 bg-gradient-to-t from-dark-900 via-dark-900/50 to-transparent"></div>
+            <div class="relative h-full flex flex-col justify-end p-6">
+              <div class="w-10 h-10 bg-brand-500/15 border border-brand-500/20 rounded-xl flex items-center justify-center mb-3">
+                <span class="iconify text-brand-400 text-xl" data-icon="lucide:palette"></span>
+              </div>
+              <h3 class="text-lg font-bold">Art Supplies</h3>
+              <p class="text-xs text-gray-500 mt-1">35 items</p>
+            </div>
+          </a>
+          <a href="#products" onclick="filterCategory('desk')" class="group relative md:col-span-2 rounded-2xl overflow-hidden border border-white/5 card-3d cursor-pointer min-h-[200px]">
+            <img src="https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d?w=800&q=80" alt="Clean desk setup with organizers and accessories" class="card-img absolute inset-0 w-full h-full object-cover transition-transform duration-700 opacity-40 group-hover:opacity-60">
+            <div class="absolute inset-0 bg-gradient-to-t from-dark-900 via-dark-900/50 to-transparent"></div>
+            <div class="relative h-full flex flex-col justify-end p-6">
+              <div class="w-10 h-10 bg-brand-500/15 border border-brand-500/20 rounded-xl flex items-center justify-center mb-3">
+                <span class="iconify text-brand-400 text-xl" data-icon="lucide:lamp-desk"></span>
+              </div>
+              <h3 class="text-lg font-bold">Desk Accessories</h3>
+              <p class="text-xs text-gray-500 mt-1">29 items — Organize your workspace</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="py-24 relative">
+      <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-brand-500/[0.03] rounded-full blur-[120px]"></div>
+      <div class="max-w-7xl mx-auto px-6 lg:px-8 relative">
+        <div class="text-center mb-14">
+          <span class="text-xs font-semibold text-brand-500 uppercase tracking-widest">Curated Selection</span>
+          <h2 class="text-3xl md:text-5xl font-extrabold tracking-tighter mt-3">Bestselling Products</h2>
+          <p class="text-gray-500 mt-4 max-w-md mx-auto">Our most loved stationery, handpicked for exceptional quality and style.</p>
+        </div>
+        <div id="featured-products" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        <div class="text-center mt-14">
+          <a href="#products" class="group inline-flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/15 text-white text-sm font-semibold px-8 py-4 rounded-xl transition-all">
+            View All Products
+            <span class="iconify transition-transform group-hover:translate-x-1" data-icon="lucide:arrow-right"></span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Image + Text Feature -->
+    <section class="py-24 relative">
+      <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
+      <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+          <div class="relative">
+            <div class="absolute -inset-4 bg-gradient-to-br from-brand-500/10 to-transparent rounded-3xl blur-2xl"></div>
+            <div class="relative grid grid-cols-2 gap-4">
+              <img src="https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&q=80" alt="Colorful pens and pencils arranged neatly" class="rounded-2xl border border-white/5 w-full h-64 object-cover">
+              <img src="https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=400&q=80" alt="Open notebook with handwriting" class="rounded-2xl border border-white/5 w-full h-64 object-cover mt-8">
+              <img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=400&q=80" alt="Art pencils in a row" class="rounded-2xl border border-white/5 w-full h-64 object-cover -mt-4">
+              <img src="https://images.unsplash.com/photo-1589810264340-0ce27bfbf751?w=400&q=80" alt="Pen with ink on paper" class="rounded-2xl border border-white/5 w-full h-64 object-cover mt-4">
+            </div>
+          </div>
+          <div>
+            <span class="text-xs font-semibold text-brand-500 uppercase tracking-widest">Why Inkwell</span>
+            <h2 class="text-3xl md:text-4xl font-extrabold tracking-tighter mt-3 mb-6">Stationery That<br><span class="text-gradient">Inspires</span></h2>
+            <p class="text-gray-400 leading-relaxed mb-8">We don't just sell stationery — we curate experiences. Every pen, notebook, and desk accessory in our collection is tested, reviewed, and approved by our team of writers, artists, and designers.</p>
+            <div class="space-y-5">
+              <div class="flex items-start gap-4">
+                <div class="w-10 h-10 bg-brand-500/10 border border-brand-500/20 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span class="iconify text-brand-500" data-icon="lucide:shield-check"></span>
+                </div>
+                <div>
+                  <h4 class="text-sm font-semibold mb-1">Quality Guaranteed</h4>
+                  <p class="text-sm text-gray-500 leading-relaxed">Every product tested against 12 quality checkpoints before listing.</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-4">
+                <div class="w-10 h-10 bg-brand-500/10 border border-brand-500/20 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span class="iconify text-brand-500" data-icon="lucide:truck"></span>
+                </div>
+                <div>
+                  <h4 class="text-sm font-semibold mb-1">Free Delivery Across India</h4>
+                  <p class="text-sm text-gray-500 leading-relaxed">On all orders above ₹499. Delivered in 3-5 business days pan-India.</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-4">
+                <div class="w-10 h-10 bg-brand-500/10 border border-brand-500/20 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span class="iconify text-brand-500" data-icon="lucide:rotate-ccw"></span>
+                </div>
+                <div>
+                  <h4 class="text-sm font-semibold mb-1">Easy 7-Day Returns</h4>
+                  <p class="text-sm text-gray-500 leading-relaxed">Hassle-free returns within 7 days. No questions asked.</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-4">
+                <div class="w-10 h-10 bg-brand-500/10 border border-brand-500/20 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span class="iconify text-brand-500" data-icon="lucide:indian-rupee"></span>
+                </div>
+                <div>
+                  <h4 class="text-sm font-semibold mb-1">UPI, Cards & COD</h4>
+                  <p class="text-sm text-gray-500 leading-relaxed">Pay however you like — GPay, PhonePe, cards, or cash on delivery.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="py-24 relative overflow-hidden">
+      <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
+      <div class="absolute -top-40 -right-40 w-96 h-96 bg-brand-500/[0.04] rounded-full blur-[100px]"></div>
+      <div class="max-w-7xl mx-auto px-6 lg:px-8 relative">
+        <div class="text-center mb-14">
+          <span class="text-xs font-semibold text-brand-500 uppercase tracking-widest">Testimonials</span>
+          <h2 class="text-3xl md:text-5xl font-extrabold tracking-tighter mt-3">Loved by Writers</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="group relative bg-dark-800/50 border border-white/5 rounded-2xl p-7 hover:border-brand-500/20 transition-all duration-300">
+            <div class="absolute top-7 right-7 text-6xl font-extrabold text-white/[0.03] leading-none">"</div>
+            <div class="flex gap-1 mb-5">
+              <span class="iconify text-brand-500 text-sm" data-icon="lucide:star"></span>
+              <span class="iconify text-brand-500 text-sm" data-icon="lucide:star"></span>
+              <span class="iconify text-brand-500 text-sm" data-icon="lucide:star"></span>
+              <span class="iconify text-brand-500 text-sm" data-icon="lucide:star"></span>
+              <span class="iconify text-brand-500 text-sm" data-icon="lucide:star"></span>
+            </div>
+            <p class="text-gray-300 text-sm leading-relaxed mb-6">"The leather journal is absolutely stunning. The paper quality is so smooth — my fountain pen glides effortlessly. Yeh hi toh mera go-to stationery shop hai ab. Highly recommend for journaling lovers!"</p>
+            <div class="flex items-center gap-3 pt-5 border-t border-white/5">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-brand-500/30 to-brand-600/10 flex items-center justify-center text-brand-400 font-bold text-sm">MJ</div>
+              <div>
+                <div class="text-sm font-semibold">Meera Joshi</div>
+                <div class="text-xs text-gray-500">Journaling Enthusiast, Mumbai</div>
+              </div>
+            </div>
+          </div>
+          <div class="group relative bg-dark-800/50 border border-white/5 rounded-2xl p-7 hover:border-brand-500/20 transition-all duration-300">
+            <div class="absolute top-7 right-7 text-6xl font-extrabold text-white/[0.03] leading-none">"</div>
+            <div class="flex gap-1 mb-5">
+              <span class="iconify text-brand-500 text-sm" data-icon="lucide:star"></span>
+              <span class="iconify text-brand-500 text-sm" data-icon="lucide:star"></span>
+              <span class="iconify text-brand-500 text-sm" data-icon="lucide:star"></span>
+              <span class="iconify text-brand-500 text-sm" data-icon="lucide:star"></span>
+              <span class="iconify text-brand-500 text-sm" data-icon="lucide:star"></span>
+            </div>
+            <p class="text-gray-300 text-sm leading-relaxed mb-6">"Ordered the walnut desk organizer — it transformed my WFH setup completely. The craftsmanship is unreal for this price. Delivery to Bangalore was super fast. Best stationery brand in India, hands down."</p>
+            <div class="flex items-center gap-3 pt-5 border-t border-white/5">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-brand-500/30 to-brand-600/10 flex items-center justify-center text-brand-400 font-bold text-sm">RK</div>
+              <div>
+                <div class="text-sm font-semibold">Rohan Kapoor</div>
+                <div class="text-xs text-gray-500">Product Designer, Bangalore</div>
+              </div>
+            </div>
+          </div>
+          <div class="group relative bg-dark-800/50 border border-white/5 rounded-2xl p-7 hover:border-brand-500/20 transition-all duration-300">
+            <div class="absolute top-7 right-7 text-6xl font-extrabold text-white/[0.03] leading-none">"</div>
+            <div class="flex gap-1 mb-5">
+              <span class="iconify text-brand-500 text-sm" data-icon="lucide:star"></span>
+              <span class="iconify text-brand-500 text-sm" data-icon="lucide:star"></span>
+              <span class="iconify text-brand-500 text-sm" data-icon="lucide:star"></span>
+              <span class="iconify text-brand-500 text-sm" data-icon="lucide:star"></span>
+              <span class="iconify text-brand-500 text-sm" data-icon="lucide:star"></span>
+            </div>
+            <p class="text-gray-300 text-sm leading-relaxed mb-6">"As an architecture student at IIT Roorkee, I need reliable fineliners. The 12-color set is perfection — consistent lines, no bleeding on tracing paper. Ab sab Inkwell se hi order karta hoon!"</p>
+            <div class="flex items-center gap-3 pt-5 border-t border-white/5">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-brand-500/30 to-brand-600/10 flex items-center justify-center text-brand-400 font-bold text-sm">DI</div>
+              <div>
+                <div class="text-sm font-semibold">Diya Iyer</div>
+                <div class="text-xs text-gray-500">Architecture Student, IIT Roorkee</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-24 relative">
+      <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
+      <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="relative rounded-3xl overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1400&q=80" alt="Flat lay stationery items" class="absolute inset-0 w-full h-full object-cover opacity-15">
+          <div class="absolute inset-0 bg-gradient-to-r from-dark-800 to-dark-800/90"></div>
+          <div class="absolute top-0 right-0 w-96 h-96 bg-brand-500/10 rounded-full blur-[120px]"></div>
+          <div class="relative px-8 sm:px-16 py-20 text-center sm:text-left flex flex-col sm:flex-row items-center gap-10">
+            <div class="flex-1">
+              <h2 class="text-3xl md:text-5xl font-extrabold tracking-tighter mb-4">Ready to Write<br>Your Story?</h2>
+              <p class="text-gray-400 max-w-md mb-8">Join 18,000+ creatives across India who trust Inkwell for their everyday stationery needs. Free delivery on your first order.</p>
+              <div class="flex flex-wrap gap-4">
+                <a href="#products" class="group inline-flex items-center gap-2.5 bg-gradient-to-r from-brand-600 to-brand-500 text-white text-sm font-semibold px-8 py-4 rounded-xl transition-all shadow-xl shadow-brand-500/25">
+                  Start Shopping
+                  <span class="iconify transition-transform group-hover:translate-x-0.5" data-icon="lucide:arrow-right"></span>
+                </a>
+              </div>
+            </div>
+            <div class="hidden sm:block relative">
+              <div class="absolute -inset-4 bg-brand-500/10 rounded-2xl blur-2xl animate-pulse"></div>
+              <img src="https://images.unsplash.com/photo-1544816155-12df9643f363?w=300&q=80" alt="Open notebook with pen" class="relative w-64 h-80 object-cover rounded-2xl border border-white/10 shadow-2xl rotate-3">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ==================== PRODUCTS ==================== -->
+  <div id="page-products" class="page">
+    <section class="pt-36 pb-24 relative">
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-brand-500/[0.03] rounded-full blur-[120px]"></div>
+      <div class="max-w-7xl mx-auto px-6 lg:px-8 relative">
+        <div class="mb-10">
+          <span class="text-xs font-semibold text-brand-500 uppercase tracking-widest">Collection</span>
+          <h1 class="text-4xl md:text-6xl font-extrabold tracking-tighter mt-2">All Products</h1>
+          <p class="text-gray-500 mt-3">Browse our complete range of premium stationery essentials.</p>
+        </div>
+        <div class="flex flex-col lg:flex-row gap-8">
+          <aside class="lg:w-64 flex-shrink-0">
+            <div class="bg-dark-800/50 border border-white/5 rounded-2xl p-6 sticky top-32 backdrop-blur-sm">
+              <h3 class="text-sm font-bold mb-5 flex items-center gap-2">
+                <span class="iconify text-brand-500" data-icon="lucide:sliders-horizontal"></span>
+                Filters
+              </h3>
+              <div class="mb-6">
+                <label class="text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-3 block">Category</label>
+                <div class="flex flex-col gap-1">
+                  <button onclick="filterCategory('all')" class="filter-btn text-left text-sm text-gray-400 hover:text-white hover:bg-white/5 px-3 py-2.5 rounded-xl transition-all" data-filter="all">All Products</button>
+                  <button onclick="filterCategory('notebooks')" class="filter-btn text-left text-sm text-gray-400 hover:text-white hover:bg-white/5 px-3 py-2.5 rounded-xl transition-all" data-filter="notebooks">Notebooks</button>
+                  <button onclick="filterCategory('pens')" class="filter-btn text-left text-sm text-gray-400 hover:text-white hover:bg-white/5 px-3 py-2.5 rounded-xl transition-all" data-filter="pens">Pens & Writing</button>
+                  <button onclick="filterCategory('art')" class="filter-btn text-left text-sm text-gray-400 hover:text-white hover:bg-white/5 px-3 py-2.5 rounded-xl transition-all" data-filter="art">Art Supplies</button>
+                  <button onclick="filterCategory('desk')" class="filter-btn text-left text-sm text-gray-400 hover:text-white hover:bg-white/5 px-3 py-2.5 rounded-xl transition-all" data-filter="desk">Desk Accessories</button>
+                </div>
+              </div>
+              <div>
+                <label class="text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-3 block">Price Range</label>
+                <div class="flex flex-col gap-1">
+                  <button onclick="filterPrice('all')" class="price-btn text-left text-sm text-gray-400 hover:text-white hover:bg-white/5 px-3 py-2.5 rounded-xl transition-all" data-price="all">Any Price</button>
+                  <button onclick="filterPrice('under500')" class="price-btn text-left text-sm text-gray-400 hover:text-white hover:bg-white/5 px-3 py-2.5 rounded-xl transition-all" data-price="under500">Under ₹500</button>
+                  <button onclick="filterPrice('500to1000')" class="price-btn text-left text-sm text-gray-400 hover:text-white hover:bg-white/5 px-3 py-2.5 rounded-xl transition-all" data-price="500to1000">₹500 – ₹1,000</button>
+                  <button onclick="filterPrice('over1000')" class="price-btn text-left text-sm text-gray-400 hover:text-white hover:bg-white/5 px-3 py-2.5 rounded-xl transition-all" data-price="over1000">Over ₹1,000</button>
+                </div>
+              </div>
+            </div>
+          </aside>
+          <div class="flex-1">
+            <div class="flex items-center justify-between mb-6">
+              <p id="product-count" class="text-sm text-gray-500">Showing 15 products</p>
+              <select id="sort-select" onchange="sortProducts()" class="bg-dark-800 border border-white/5 text-sm text-gray-300 rounded-xl px-4 py-2.5 focus:border-brand-500 transition-colors cursor-pointer">
+                <option value="featured">Featured</option>
+                <option value="price-low">Price: Low → High</option>
+                <option value="price-high">Price: High → Low</option>
+                <option value="name">Name A–Z</option>
+              </select>
+            </div>
+            <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ==================== ABOUT ==================== -->
+  <div id="page-about" class="page">
+    <section class="relative pt-36 pb-20 overflow-hidden">
+      <div class="absolute top-20 right-0 w-[500px] h-[500px] bg-brand-500/[0.04] rounded-full blur-[120px]"></div>
+      <div class="max-w-7xl mx-auto px-6 lg:px-8 relative">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div>
+            <span class="text-xs font-semibold text-brand-500 uppercase tracking-widest">Our Story</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tighter mt-3 mb-6">Crafted with<br><span class="text-gradient">Purpose</span></h1>
+            <p class="text-lg text-gray-400 font-light leading-relaxed">Inkwell was born from a simple belief: the tools you use shape the ideas you create. We curate stationery that inspires, not just functions — right from the heart of India.</p>
+          </div>
+          <div class="relative">
+            <div class="absolute -inset-4 bg-gradient-to-br from-brand-500/10 to-transparent rounded-3xl blur-2xl"></div>
+            <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=700&q=80" alt="Person writing in a journal at a desk" class="relative rounded-2xl border border-white/5 w-full h-80 object-cover">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Timeline Story -->
+    <section class="py-24 relative">
+      <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
+      <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div class="order-2 lg:order-1 relative">
+            <img src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=700&q=80" alt="Rows of colorful books on a shelf" class="rounded-2xl border border-white/5 w-full h-96 object-cover">
+            <div class="absolute -bottom-6 -right-6 bg-gradient-to-br from-brand-600 to-brand-500 rounded-2xl p-6 shadow-xl shadow-brand-500/25">
+              <div class="text-4xl font-extrabold">2019</div>
+              <div class="text-sm text-white/80 font-medium">Year Founded</div>
+            </div>
+          </div>
+          <div class="order-1 lg:order-2">
+            <h2 class="text-3xl md:text-4xl font-extrabold tracking-tighter mb-6">From a Jaipur Room to 18,000+ Happy Customers</h2>
+            <div class="space-y-4 text-gray-400 leading-relaxed">
+              <p>It all started in a small room in Jaipur — Aanya Sharma, a former architect, was tired of ordering stationery from abroad and waiting weeks for delivery. She began sourcing beautiful handmade notebooks from local artisans in Sanganer, a village near Jaipur famous for its hand-block printing and paper craft.</p>
+              <p>What began as a weekend passion project — selling on Instagram to friends and family — quickly caught on. People loved the quality, the packaging, and the personal touch. Within six months, Inkwell had 2,000 customers across India.</p>
+              <p>Today, we work with over 40 independent makers and brands — from paper mills in Tamil Nadu to pen craftsmen in Rajasthan, and calligraphy artisans from West Bengal. We bring India's finest stationery to your doorstep, wherever you are in the country.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Values -->
+    <section class="py-24 relative">
+      <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
+      <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="text-center mb-14">
+          <span class="text-xs font-semibold text-brand-500 uppercase tracking-widest">What We Stand For</span>
+          <h2 class="text-3xl md:text-5xl font-extrabold tracking-tighter mt-3">Our Values</h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="group bg-dark-800/50 border border-white/5 rounded-2xl p-7 hover:border-brand-500/20 transition-all duration-300 card-3d">
+            <div class="w-14 h-14 bg-gradient-to-br from-brand-500/15 to-brand-600/5 border border-brand-500/20 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+              <span class="iconify text-brand-500 text-2xl" data-icon="lucide:gem"></span>
+            </div>
+            <h3 class="text-lg font-bold mb-2">Quality First</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">Every product tested against 12 quality checkpoints. No compromises, ever.</p>
+          </div>
+          <div class="group bg-dark-800/50 border border-white/5 rounded-2xl p-7 hover:border-brand-500/20 transition-all duration-300 card-3d">
+            <div class="w-14 h-14 bg-gradient-to-br from-brand-500/15 to-brand-600/5 border border-brand-500/20 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+              <span class="iconify text-brand-500 text-2xl" data-icon="lucide:leaf"></span>
+            </div>
+            <h3 class="text-lg font-bold mb-2">Sustainability</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">Eco-friendly materials and recycled packaging. We plant a tree for every 50 orders.</p>
+          </div>
+          <div class="group bg-dark-800/50 border border-white/5 rounded-2xl p-7 hover:border-brand-500/20 transition-all duration-300 card-3d">
+            <div class="w-14 h-14 bg-gradient-to-br from-brand-500/15 to-brand-600/5 border border-brand-500/20 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+              <span class="iconify text-brand-500 text-2xl" data-icon="lucide:hand-heart"></span>
+            </div>
+            <h3 class="text-lg font-bold mb-2">Support Local Artisans</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">We partner with kaarigars and small-batch makers across Rajasthan, Tamil Nadu, and Bengal.</p>
+          </div>
+          <div class="group bg-dark-800/50 border border-white/5 rounded-2xl p-7 hover:border-brand-500/20 transition-all duration-300 card-3d">
+            <div class="w-14 h-14 bg-gradient-to-br from-brand-500/15 to-brand-600/5 border border-brand-500/20 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+              <span class="iconify text-brand-500 text-2xl" data-icon="lucide:sparkles"></span>
+            </div>
+            <h3 class="text-lg font-bold mb-2">Made in India Pride</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">80% of our products are made in India. We celebrate our craft heritage with every product.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Team -->
+    <section class="py-24 relative">
+      <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
+      <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="text-center mb-14">
+          <span class="text-xs font-semibold text-brand-500 uppercase tracking-widest">The People</span>
+          <h2 class="text-3xl md:text-5xl font-extrabold tracking-tighter mt-3">Meet the Team</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="group text-center">
+            <div class="relative w-36 h-36 mx-auto mb-5">
+              <div class="absolute -inset-1 bg-gradient-to-br from-brand-500/30 to-transparent rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&q=80" alt="Aanya Sharma, Founder" class="relative w-full h-full object-cover rounded-full border-2 border-white/10 group-hover:border-brand-500/30 transition-colors">
+            </div>
+            <h3 class="text-lg font-bold">Aanya Sharma</h3>
+            <p class="text-sm text-brand-500 font-medium mb-2">Founder & CEO</p>
+            <p class="text-sm text-gray-500 leading-relaxed max-w-xs mx-auto">Former architect from Jaipur who turned her stationery obsession into India's fastest-growing premium stationery brand.</p>
+          </div>
+          <div class="group text-center">
+            <div class="relative w-36 h-36 mx-auto mb-5">
+              <div class="absolute -inset-1 bg-gradient-to-br from-brand-500/30 to-transparent rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&q=80" alt="Arjun Menon, Design Lead" class="relative w-full h-full object-cover rounded-full border-2 border-white/10 group-hover:border-brand-500/30 transition-colors">
+            </div>
+            <h3 class="text-lg font-bold">Arjun Menon</h3>
+            <p class="text-sm text-brand-500 font-medium mb-2">Design Lead</p>
+            <p class="text-sm text-gray-500 leading-relaxed max-w-xs mx-auto">NID Ahmedabad alumnus with 12 years of product design experience. Ensures every item meets our aesthetic standards.</p>
+          </div>
+          <div class="group text-center">
+            <div class="relative w-36 h-36 mx-auto mb-5">
+              <div class="absolute -inset-1 bg-gradient-to-br from-brand-500/30 to-transparent rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&q=80" alt="Priya Nair, Operations" class="relative w-full h-full object-cover rounded-full border-2 border-white/10 group-hover:border-brand-500/30 transition-colors">
+            </div>
+            <h3 class="text-lg font-bold">Priya Nair</h3>
+            <p class="text-sm text-brand-500 font-medium mb-2">Head of Operations</p>
+            <p class="text-sm text-gray-500 leading-relaxed max-w-xs mx-auto">IIM Kozhikode graduate who keeps everything running like clockwork — from our Jaipur warehouse to your doorstep.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="py-24 relative">
+      <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
+      <div class="max-w-3xl mx-auto px-6 lg:px-8 text-center">
+        <div class="w-16 h-16 bg-gradient-to-br from-brand-500/15 to-brand-600/5 border border-brand-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <span class="iconify text-brand-500 text-2xl" data-icon="lucide:mail"></span>
+        </div>
+        <h2 class="text-3xl md:text-4xl font-extrabold tracking-tighter mb-3">Get in Touch</h2>
+        <p class="text-gray-500 mb-10">Have a question, bulk order inquiry, or just want to say namaste? We'd love to hear from you.</p>
+        <div class="bg-dark-800/50 border border-white/5 rounded-2xl p-8 text-left backdrop-blur-sm">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-2 block">Name</label>
+              <input type="text" id="contact-name" placeholder="Aapka naam" class="w-full bg-dark-700 border border-white/5 text-white text-sm rounded-xl px-4 py-3.5 focus:border-brand-500/50 transition-colors placeholder-gray-600">
+            </div>
+            <div>
+              <label class="text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-2 block">Email</label>
+              <input type="email" id="contact-email" placeholder="aapka@email.com" class="w-full bg-dark-700 border border-white/5 text-white text-sm rounded-xl px-4 py-3.5 focus:border-brand-500/50 transition-colors placeholder-gray-600">
+            </div>
+          </div>
+          <div class="mb-5">
+            <label class="text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-2 block">Message</label>
+            <textarea id="contact-message" rows="4" placeholder="Kaise madad kar sakte hain?" class="w-full bg-dark-700 border border-white/5 text-white text-sm rounded-xl px-4 py-3.5 focus:border-brand-500/50 transition-colors placeholder-gray-600 resize-none"></textarea>
+          </div>
+          <button onclick="sendContactForm()" class="w-full bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white font-semibold py-4 rounded-xl transition-all shadow-lg shadow-brand-500/20">
+            Send Message
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ==================== LOGIN ==================== -->
+  <div id="page-login" class="page">
+    <section class="min-h-screen flex items-center justify-center pt-28 pb-12 px-6 relative overflow-hidden">
+      <div class="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-brand-500/[0.04] rounded-full blur-[120px]"></div>
+      <div class="absolute bottom-1/4 right-1/4 w-72 h-72 bg-brand-500/[0.03] rounded-full blur-[100px]"></div>
+      <div class="relative w-full max-w-[440px]">
+        <div class="text-center mb-8">
+          <a href="#home" class="inline-flex items-center gap-2.5">
+            <div class="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl flex items-center justify-center shadow-lg shadow-brand-500/20">
+              <span class="iconify text-white text-lg" data-icon="lucide:pen-tool"></span>
+            </div>
+            <span class="text-xl font-bold tracking-tight">Inkwell</span>
+          </a>
+        </div>
+        <div class="bg-dark-800/60 border border-white/[0.06] rounded-2xl p-8 backdrop-blur-xl">
+          <div class="flex bg-dark-700/50 rounded-xl p-1 mb-8 border border-white/5">
+            <button onclick="switchAuthTab('login')" id="tab-login" class="auth-tab flex-1 text-sm font-semibold py-3 rounded-lg transition-all bg-gradient-to-r from-brand-600 to-brand-500 text-white shadow-lg shadow-brand-500/20">Sign In</button>
+            <button onclick="switchAuthTab('register')" id="tab-register" class="auth-tab flex-1 text-sm font-semibold py-3 rounded-lg transition-all text-gray-500 hover:text-gray-300">Create Account</button>
+          </div>
+          <form id="form-login" onsubmit="handleLogin(event)" class="space-y-5">
+            <div>
+              <label class="text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-2 block">Email Address</label>
+              <div class="relative">
+                <span class="iconify absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" data-icon="lucide:mail"></span>
+                <input type="email" id="login-email" required placeholder="aapka@email.com" class="w-full bg-dark-700 border border-white/5 text-white text-sm rounded-xl pl-11 pr-4 py-3.5 focus:border-brand-500/50 transition-colors placeholder-gray-600">
+              </div>
+            </div>
+            <div>
+              <label class="text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-2 block">Password</label>
+              <div class="relative">
+                <span class="iconify absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" data-icon="lucide:lock"></span>
+                <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-dark-700 border border-white/5 text-white text-sm rounded-xl pl-11 pr-11 py-3.5 focus:border-brand-500/50 transition-colors placeholder-gray-600">
+                <button type="button" onclick="togglePassword('login-password')" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-400 transition-colors">
+                  <span class="iconify" data-icon="lucide:eye"></span>
+                </button>
+              </div>
+            </div>
+            <div class="flex items-center justify-between">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" class="w-4 h-4 rounded bg-dark-700 border-white/10 text-brand-500 focus:ring-brand-500 focus:ring-offset-0">
+                <span class="text-sm text-gray-500">Remember me</span>
+              </label>
+              <button type="button" class="text-sm text-brand-500 hover:text-brand-400 transition-colors font-medium">Forgot password?</button>
+            </div>
+            <div id="login-error" class="hidden text-sm text-red-400 bg-red-400/10 border border-red-400/20 rounded-xl px-4 py-3"></div>
+            <button type="submit" class="w-full bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white font-semibold py-4 rounded-xl transition-all shadow-lg shadow-brand-500/20 hover:shadow-brand-500/30">
+              Sign In
+            </button>
+          </form>
+          <form id="form-register" onsubmit="handleRegister(event)" class="space-y-5 hidden">
+            <div>
+              <label class="text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-2 block">Full Name</label>
+              <div class="relative">
+                <span class="iconify absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" data-icon="lucide:user"></span>
+                <input type="text" id="register-name" required placeholder="Aapka poora naam" class="w-full bg-dark-700 border border-white/5 text-white text-sm rounded-xl pl-11 pr-4 py-3.5 focus:border-brand-500/50 transition-colors placeholder-gray-600">
+              </div>
+            </div>
+            <div>
+              <label class="text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-2 block">Email Address</label>
+              <div class="relative">
+                <span class="iconify absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" data-icon="lucide:mail"></span>
+                <input type="email" id="register-email" required placeholder="aapka@email.com" class="w-full bg-dark-700 border border-white/5 text-white text-sm rounded-xl pl-11 pr-4 py-3.5 focus:border-brand-500/50 transition-colors placeholder-gray-600">
+              </div>
+            </div>
+            <div>
+              <label class="text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-2 block">Password</label>
+              <div class="relative">
+                <span class="iconify absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" data-icon="lucide:lock"></span>
+                <input type="password" id="register-password" required minlength="6" placeholder="Kam se kam 6 characters" class="w-full bg-dark-700 border border-white/5 text-white text-sm rounded-xl pl-11 pr-11 py-3.5 focus:border-brand-500/50 transition-colors placeholder-gray-600">
+                <button type="button" onclick="togglePassword('register-password')" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-400 transition-colors">
+                  <span class="iconify" data-icon="lucide:eye"></span>
+                </button>
+              </div>
+            </div>
+            <div>
+              <label class="text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-2 block">Confirm Password</label>
+              <div class="relative">
+                <span class="iconify absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" data-icon="lucide:lock"></span>
+                <input type="password" id="register-confirm" required placeholder="••••••••" class="w-full bg-dark-700 border border-white/5 text-white text-sm rounded-xl pl-11 pr-4 py-3.5 focus:border-brand-500/50 transition-colors placeholder-gray-600">
+              </div>
+            </div>
+            <div id="register-error" class="hidden text-sm text-red-400 bg-red-400/10 border border-red-400/20 rounded-xl px-4 py-3"></div>
+            <div id="register-success" class="hidden text-sm text-green-400 bg-green-400/10 border border-green-400/20 rounded-xl px-4 py-3"></div>
+            <button type="submit" class="w-full bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white font-semibold py-4 rounded-xl transition-all shadow-lg shadow-brand-500/20 hover:shadow-brand-500/30">
+              Create Account
+            </button>
+          </form>
+          <div class="flex items-center gap-4 my-6">
+            <div class="flex-1 h-px bg-white/5"></div>
+            <span class="text-[10px] uppercase tracking-widest text-gray-600">ya sign in karein</span>
+            <div class="flex-1 h-px bg-white/5"></div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <button onclick="socialLogin('Google')" class="flex items-center justify-center gap-2 bg-dark-700/50 hover:bg-dark-600 border border-white/5 hover:border-white/10 text-sm text-gray-300 py-3.5 rounded-xl transition-all font-medium">
+              <span class="iconify text-lg" data-icon="logos:google-icon"></span>
+              Google
+            </button>
+            <button onclick="socialLogin('GitHub')" class="flex items-center justify-center gap-2 bg-dark-700/50 hover:bg-dark-600 border border-white/5 hover:border-white/10 text-sm text-gray-300 py-3.5 rounded-xl transition-all font-medium">
+              <span class="iconify text-lg" data-icon="lucide:github"></span>
+              GitHub
+            </button>
+          </div>
+        </div>
+        <p class="text-center text-[10px] text-gray-600 mt-6 uppercase tracking-wider">By continuing, you agree to our Terms & Privacy Policy</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="border-t border-white/5 pt-16 pb-8">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-14">
+        <div>
+          <a href="#home" class="flex items-center gap-2.5 mb-5">
+            <div class="w-8 h-8 bg-gradient-to-br from-brand-500 to-brand-600 rounded-lg flex items-center justify-center">
+              <span class="iconify text-white text-sm" data-icon="lucide:pen-tool"></span>
+            </div>
+            <span class="text-lg font-bold tracking-tight">Inkwell</span>
+          </a>
+          <p class="text-sm text-gray-500 leading-relaxed mb-5">India's favourite premium stationery brand. Curated for thinkers, creators, and dreamers.</p>
+          <div class="flex gap-2">
+            <a href="#" class="w-9 h-9 bg-white/[0.03] hover:bg-brand-500/20 border border-white/5 hover:border-brand-500/30 rounded-xl flex items-center justify-center text-gray-500 hover:text-brand-400 transition-all">
+              <span class="iconify" data-icon="lucide:instagram"></span>
+            </a>
+            <a href="#" class="w-9 h-9 bg-white/[0.03] hover:bg-brand-500/20 border border-white/5 hover:border-brand-500/30 rounded-xl flex items-center justify-center text-gray-500 hover:text-brand-400 transition-all">
+              <span class="iconify" data-icon="lucide:twitter"></span>
+            </a>
+            <a href="#" class="w-9 h-9 bg-white/[0.03] hover:bg-brand-500/20 border border-white/5 hover:border-brand-500/30 rounded-xl flex items-center justify-center text-gray-500 hover:text-brand-400 transition-all">
+              <span class="iconify" data-icon="lucide:youtube"></span>
+            </a>
+            <a href="#" class="w-9 h-9 bg-white/[0.03] hover:bg-brand-500/20 border border-white/5 hover:border-brand-500/30 rounded-xl flex items-center justify-center text-gray-500 hover:text-brand-400 transition-all">
+              <span class="iconify" data-icon="lucide:linkedin"></span>
+            </a>
+          </div>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold mb-5 uppercase tracking-wider">Shop</h4>
+          <ul class="space-y-3">
+            <li><a href="#products" class="text-sm text-gray-500 hover:text-brand-500 transition-colors">All Products</a></li>
+            <li><a href="#products" onclick="filterCategory('notebooks')" class="text-sm text-gray-500 hover:text-brand-500 transition-colors">Notebooks</a></li>
+            <li><a href="#products" onclick="filterCategory('pens')" class="text-sm text-gray-500 hover:text-brand-500 transition-colors">Pens & Writing</a></li>
+            <li><a href="#products" onclick="filterCategory('art')" class="text-sm text-gray-500 hover:text-brand-500 transition-colors">Art Supplies</a></li>
+            <li><a href="#products" onclick="filterCategory('desk')" class="text-sm text-gray-500 hover:text-brand-500 transition-colors">Desk Accessories</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold mb-5 uppercase tracking-wider">Company</h4>
+          <ul class="space-y-3">
+            <li><a href="#about" class="text-sm text-gray-500 hover:text-brand-500 transition-colors">About Us</a></li>
+            <li><a href="#" class="text-sm text-gray-500 hover:text-brand-500 transition-colors">Blog</a></li>
+            <li><a href="#" class="text-sm text-gray-500 hover:text-brand-500 transition-colors">Careers</a></li>
+            <li><a href="#" class="text-sm text-gray-500 hover:text-brand-500 transition-colors">Press Kit</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold mb-5 uppercase tracking-wider">Support</h4>
+          <ul class="space-y-3">
+            <li><a href="#" class="text-sm text-gray-500 hover:text-brand-500 transition-colors">Help Center</a></li>
+            <li><a href="#" class="text-sm text-gray-500 hover:text-brand-500 transition-colors">Shipping Info</a></li>
+            <li><a href="#" class="text-sm text-gray-500 hover:text-brand-500 transition-colors">Returns & Refunds</a></li>
+            <li><a href="#" class="text-sm text-gray-500 hover:text-brand-500 transition-colors">Privacy Policy</a></li>
+            <li><a href="#" class="text-sm text-gray-500 hover:text-brand-500 transition-colors">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+        <p class="text-xs text-gray-600">&copy; 2025 Inkwell Stationery Pvt. Ltd. Made with ❤️ in India.</p>
+        <div class="flex items-center gap-5">
+          <span class="text-xs text-gray-600">We accept</span>
+          <div class="flex items-center gap-3 text-gray-600">
+            <span class="text-xs font-bold bg-white/5 px-2 py-1 rounded">UPI</span>
+            <span class="iconify text-2xl" data-icon="logos:visa"></span>
+            <span class="iconify text-2xl" data-icon="logos:mastercard"></span>
+            <span class="text-xs font-bold bg-white/5 px-2 py-1 rounded">COD</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+        const products = [
+      { id:1, name:"Classic Leather Journal", category:"notebooks", price:1499, image:"https://images.unsplash.com/photo-1583341655648-78bdf4ed6d13?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", badge:"Bestseller", description:"Hand-stitched leather diary with 200 pages of cream cotton paper. Made in Rajasthan." },
+      { id:2, name:"Midnight Black Notebook", category:"notebooks", price:599, image:"https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=500&q=80", badge:null, description:"Sleek hardcover with lay-flat binding and dot-grid pages. Perfect for daily notes." },
+      { id:3, name:"Kraft Canvas Journal", category:"notebooks", price:799, image:"https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=500&q=80", badge:"New", description:"Eco-friendly kraft cover with 160 lined pages from recycled paper." },
+      { id:4, name:"A5 Bullet Dot Planner", category:"notebooks", price:699, image:"https://plus.unsplash.com/premium_photo-1705583864029-8b7fdde802a5?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", badge:null, description:"Perfect for bullet journaling with 5mm dot grid. Ideal for students and professionals." },
+      { id:5, name:"Executive Fountain Pen", category:"pens", price:2799, image:"https://images.unsplash.com/photo-1585336261022-680e295ce3fe?w=500&q=80", badge:"Premium", description:"Brass body with gold-coated nib. Comes with converter and 3 ink cartridges." },
+      { id:6, name:"Fineliner Set — 12 Colors", category:"pens", price:499, image:"https://images.unsplash.com/photo-1725953386283-d918bb2ac9bb?q=80&w=1073&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", badge:"Popular", description:"0.4mm tip with water-based ink. Perfect for detail work and exam prep." },
+      { id:7, name:"Gel Pen Multipack — 20pcs", category:"pens", price:399, image:"https://plus.unsplash.com/premium_photo-1775818103627-bf0412beb2c8?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", badge:null, description:"Smooth gel ink in 20 vibrant colors with comfortable rubber grip." },
+      { id:8, name:"Calligraphy Starter Kit", category:"pens", price:1099, image:"https://images.unsplash.com/photo-1576437660517-ec052b843ef8?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", badge:"New", description:"3 interchangeable nibs, ink bottle, and practice sheets. Great for beginners." },
+      { id:9, name:"Watercolor Pencil Set — 36", category:"art", price:1349, image:"https://images.unsplash.com/photo-1619034386631-6bee80826788?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", badge:null, description:"Artist-grade water-soluble pencils with rich, blendable pigments." },
+      { id:10, name:"Sketch Pad A3 — 50 Sheets", category:"art", price:649, image:"https://plus.unsplash.com/premium_photo-1726711241937-8beb08403c47?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", badge:null, description:"Heavyweight 160gsm paper suitable for both dry and wet media." },
+      { id:11, name:"Acrylic Paint Set — 24 Tubes", category:"art", price:1199, image:"https://images.unsplash.com/photo-1584518489648-3fa91ac8440f?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", badge:"Popular", description:"Professional-grade pigments in 24 colors with smooth matte finish." },
+      { id:12, name:"Walnut Desk Organizer", category:"desk", price:1999, image:"https://plus.unsplash.com/premium_photo-1663051117790-1876e1a09d81?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", badge:"Premium", description:"Solid walnut wood with compartments for pens, phone, and visiting cards." },
+      { id:13, name:"Brass Pencil Holder", category:"desk", price:899, image:"https://plus.unsplash.com/premium_photo-1683543124517-72b9a3121771?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", badge:null, description:"Weighted brass base prevents tipping. Holds 20+ pens and pencils." },
+      { id:14, name:"Cork Desk Mat — XL Size", category:"desk", price:999, image:"https://images.unsplash.com/photo-1634848943398-879a371a7d95?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", badge:"New", description:"Extra-large natural cork mat with anti-slip base. 90×40cm. Protects your desk." },
+      { id:15, name:"Magnetic Clip Holder", category:"desk", price:449, image:"https://plus.unsplash.com/premium_photo-1757682621501-0581ae734fbe?q=80&w=1167&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", badge:null, description:"Minimalist magnetic dish keeps paper clips and pins organized." },
+    ];
+
+    let cart = JSON.parse(localStorage.getItem('inkwell_cart')||'[]');
+    let currentCategory='all', currentPrice='all';
+    let currentUser = JSON.parse(localStorage.getItem('inkwell_user')||'null');
+
+    function navigate(page){
+      document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+      const t=document.getElementById('page-'+page);
+      if(t)t.classList.add('active');
+      document.querySelectorAll('.nav-link').forEach(l=>{
+        l.classList.toggle('text-white',l.dataset.page===page);
+        l.classList.toggle('bg-white/5',l.dataset.page===page);
+        l.classList.toggle('text-gray-400',l.dataset.page!==page);
+      });
+      window.scrollTo({top:0,behavior:'smooth'});
+      if(page==='products')renderProducts();
+      if(page==='home')renderFeaturedProducts();
+    }
+    window.addEventListener('hashchange',()=>navigate(location.hash.slice(1)||'home'));
+
+    window.addEventListener('scroll',()=>{
+      const n=document.getElementById('navbar');
+      if(window.scrollY>40){n.classList.add('bg-dark-900/70','backdrop-blur-xl')}
+      else{n.classList.remove('bg-dark-900/70','backdrop-blur-xl')}
+    });
+
+    function toggleMobileMenu(){document.getElementById('mobile-menu').classList.toggle('hidden')}
+    function closeMobileMenu(){document.getElementById('mobile-menu').classList.add('hidden')}
+
+    function getFiltered(){
+      let f=[...products];
+      if(currentCategory!=='all')f=f.filter(p=>p.category===currentCategory);
+      if(currentPrice==='under500')f=f.filter(p=>p.price<500);
+      else if(currentPrice==='500to1000')f=f.filter(p=>p.price>=500&&p.price<=1000);
+      else if(currentPrice==='over1000')f=f.filter(p=>p.price>1000);
+      const s=document.getElementById('sort-select')?.value||'featured';
+      if(s==='price-low')f.sort((a,b)=>a.price-b.price);
+      else if(s==='price-high')f.sort((a,b)=>b.price-a.price);
+      else if(s==='name')f.sort((a,b)=>a.name.localeCompare(b.name));
+      return f;
+    }
+
+    function formatPrice(p){return '₹'+p.toLocaleString('en-IN')}
+
+    function card(p){
+      const inCart=cart.find(c=>c.id===p.id);
+      return `<div class="group bg-dark-800/50 border border-white/5 rounded-2xl overflow-hidden hover:border-brand-500/20 transition-all duration-300 card-3d backdrop-blur-sm">
+        <div class="relative h-60 overflow-hidden bg-dark-700">
+          <img src="${p.image}" alt="${p.name}" class="card-img w-full h-full object-cover transition-transform duration-700 opacity-60 group-hover:opacity-80" loading="lazy">
+          <div class="card-overlay absolute inset-0 bg-gradient-to-t from-dark-900/80 via-transparent to-transparent opacity-0 transition-opacity duration-300"></div>
+          ${p.badge?`<span class="absolute top-3 left-3 bg-gradient-to-r from-brand-600 to-brand-500 text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-lg shadow-lg">${p.badge}</span>`:''}
+          <div class="card-overlay absolute bottom-3 left-3 right-3 opacity-0 transition-opacity duration-300">
+            <button onclick="addToCart(${p.id})" class="w-full bg-white/10 backdrop-blur-sm hover:bg-brand-500 text-white text-sm font-semibold py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 border border-white/10">
+              <span class="iconify" data-icon="lucide:shopping-bag"></span>
+              ${inCart?'Add Another':'Quick Add'}
+            </button>
+          </div>
+        </div>
+        <div class="p-5">
+          <p class="text-[10px] font-semibold text-gray-600 uppercase tracking-widest mb-1.5">${p.category}</p>
+          <h3 class="text-[15px] font-bold mb-1 line-clamp-2 group-hover:text-brand-400 transition-colors">${p.name}</h3>
+          <p class="text-xs text-gray-500 mb-4 line-clamp-2 leading-relaxed">${p.description}</p>
+          <div class="flex items-center justify-between">
+            <span class="text-lg font-extrabold">${formatPrice(p.price)}</span>
+            <button onclick="addToCart(${p.id})" class="flex items-center gap-1.5 ${inCart?'bg-brand-500/15 text-brand-400 border border-brand-500/20':'bg-white/5 hover:bg-gradient-to-r hover:from-brand-600 hover:to-brand-500 hover:text-white text-gray-400 border border-white/5 hover:border-transparent'} text-xs font-semibold px-4 py-2.5 rounded-xl transition-all duration-200">
+              <span class="iconify text-sm" data-icon="${inCart?'lucide:check':'lucide:plus'}"></span>
+              ${inCart?'Added':'Add'}
+            </button>
+          </div>
+        </div>
+      </div>`;
+    }
+
+    function renderProducts(){
+      const f=getFiltered();
+      document.getElementById('products-grid').innerHTML=f.map(card).join('');
+      document.getElementById('product-count').textContent=`Showing ${f.length} product${f.length!==1?'s':''}`;
+    }
+    function renderFeaturedProducts(){
+      document.getElementById('featured-products').innerHTML=[products[0],products[4],products[5],products[8],products[11],products[13]].map(card).join('');
+    }
+
+    function filterCategory(c){
+      currentCategory=c;
+      document.querySelectorAll('.filter-btn').forEach(b=>{
+        const active=b.dataset.filter===c;
+        b.classList.toggle('bg-brand-500/15',active);
+        b.classList.toggle('text-brand-400',active);
+        b.classList.toggle('font-semibold',active);
+        b.classList.toggle('text-gray-400',!active);
+      });
+      renderProducts();
+    }
+    function filterPrice(p){
+      currentPrice=p;
+      document.querySelectorAll('.price-btn').forEach(b=>{
+        const active=b.dataset.price===p;
+        b.classList.toggle('bg-brand-500/15',active);
+        b.classList.toggle('text-brand-400',active);
+        b.classList.toggle('font-semibold',active);
+        b.classList.toggle('text-gray-400',!active);
+      });
+      renderProducts();
+    }
+    function sortProducts(){renderProducts()}
+
+    function addToCart(id){
+      const e=cart.find(c=>c.id===id);
+      if(e)e.qty++;else cart.push({id,qty:1});
+      saveCart();showToast('Bag mein add ho gaya!','success');
+      renderProducts();renderFeaturedProducts();updateCartUI();
+    }
+    function removeFromCart(id){cart=cart.filter(c=>c.id!==id);saveCart();updateCartUI();renderProducts();renderFeaturedProducts()}
+    function updateCartQty(id,d){const i=cart.find(c=>c.id===id);if(i){i.qty+=d;if(i.qty<=0){removeFromCart(id);return}}saveCart();updateCartUI()}
+    function saveCart(){localStorage.setItem('inkwell_cart',JSON.stringify(cart))}
+
+    function updateCartUI(){
+      const ct=document.getElementById('cart-count');
+      const total=cart.reduce((s,c)=>s+c.qty,0);
+      if(total>0){ct.textContent=total;ct.classList.remove('hidden')}else ct.classList.add('hidden');
+      const items=document.getElementById('cart-items'),footer=document.getElementById('cart-footer');
+      document.getElementById('cart-item-count').textContent=total+' item'+(total!==1?'s':'');
+      if(!cart.length){items.innerHTML='<div class="flex flex-col items-center justify-center h-full text-center"><div class="w-20 h-20 bg-dark-700 rounded-full flex items-center justify-center mb-4"><span class="iconify text-3xl text-gray-600" data-icon="lucide:shopping-bag"></span></div><p class="text-gray-500 text-sm">Your bag is empty</p><a href="#products" onclick="toggleCart()" class="text-sm text-brand-500 hover:text-brand-400 mt-2 transition-colors">Start shopping →</a></div>';footer.classList.add('hidden');return}
+      footer.classList.remove('hidden');
+      let t=0;
+      items.innerHTML=cart.map(c=>{const p=products.find(pr=>pr.id===c.id);const st=p.price*c.qty;t+=st;return `<div class="flex gap-4 py-4 border-b border-white/5 last:border-0"><img src="${p.image}" alt="${p.name}" class="w-16 h-16 rounded-xl object-cover opacity-80"><div class="flex-1 min-w-0"><h4 class="text-sm font-semibold truncate">${p.name}</h4><p class="text-sm text-brand-500 font-bold mt-0.5">${formatPrice(p.price)}</p><div class="flex items-center gap-2 mt-2"><button onclick="updateCartQty(${p.id},-1)" class="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-xs transition-colors border border-white/5">−</button><span class="text-sm font-semibold w-6 text-center">${c.qty}</span><button onclick="updateCartQty(${p.id},1)" class="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-xs transition-colors border border-white/5">+</button></div></div><button onclick="removeFromCart(${p.id})" class="text-gray-600 hover:text-red-400 transition-colors self-start p-1"><span class="iconify text-sm" data-icon="lucide:x"></span></button></div>`}).join('');
+      document.getElementById('cart-subtotal').textContent=formatPrice(t);
+      document.getElementById('cart-total').textContent=formatPrice(t);
+    }
+
+    function toggleCart(){
+      const s=document.getElementById('cart-sidebar'),o=document.getElementById('cart-overlay');
+      const open=!s.classList.contains('translate-x-full');
+      if(open){s.classList.add('translate-x-full');o.classList.add('hidden');document.body.style.overflow=''}
+      else{s.classList.remove('translate-x-full');o.classList.remove('hidden');document.body.style.overflow='hidden';updateCartUI()}
+    }
+
+    function switchAuthTab(tab){
+      const lt=document.getElementById('tab-login'),rt=document.getElementById('tab-register'),lf=document.getElementById('form-login'),rf=document.getElementById('form-register');
+      if(tab==='login'){lt.className='auth-tab flex-1 text-sm font-semibold py-3 rounded-lg transition-all bg-gradient-to-r from-brand-600 to-brand-500 text-white shadow-lg shadow-brand-500/20';rt.className='auth-tab flex-1 text-sm font-semibold py-3 rounded-lg transition-all text-gray-500 hover:text-gray-300';lf.classList.remove('hidden');rf.classList.add('hidden')}
+      else{rt.className='auth-tab flex-1 text-sm font-semibold py-3 rounded-lg transition-all bg-gradient-to-r from-brand-600 to-brand-500 text-white shadow-lg shadow-brand-500/20';lt.className='auth-tab flex-1 text-sm font-semibold py-3 rounded-lg transition-all text-gray-500 hover:text-gray-300';rf.classList.remove('hidden');lf.classList.add('hidden')}
+      document.getElementById('login-error').classList.add('hidden');
+      document.getElementById('register-error').classList.add('hidden');
+      document.getElementById('register-success').classList.add('hidden');
+    }
+
+    function handleLogin(e){
+      e.preventDefault();
+      const email=document.getElementById('login-email').value.trim(),pw=document.getElementById('login-password').value,er=document.getElementById('login-error');
+      const users=JSON.parse(localStorage.getItem('inkwell_users')||'[]'),u=users.find(x=>x.email===email);
+      if(!u){er.textContent='Is email se koi account nahi mila. Pehle register karein.';er.classList.remove('hidden');return}
+      if(u.password!==pw){er.textContent='Galat password. Dobara try karein.';er.classList.remove('hidden');return}
+      currentUser={name:u.name,email:u.email};localStorage.setItem('inkwell_user',JSON.stringify(currentUser));
+      updateAuthUI();showToast('Welcome back, '+u.name.split(' ')[0]+'!','success');location.hash='home';
+    }
+
+    function handleRegister(e){
+      e.preventDefault();
+      const name=document.getElementById('register-name').value.trim(),email=document.getElementById('register-email').value.trim(),pw=document.getElementById('register-password').value,cnf=document.getElementById('register-confirm').value;
+      const er=document.getElementById('register-error'),sc=document.getElementById('register-success');
+      er.classList.add('hidden');sc.classList.add('hidden');
+      if(pw!==cnf){er.textContent='Dono passwords match nahi kar rahe.';er.classList.remove('hidden');return}
+      const users=JSON.parse(localStorage.getItem('inkwell_users')||'[]');
+      if(users.find(u=>u.email===email)){er.textContent='Yeh email pehle se registered hai.';er.classList.remove('hidden');return}
+      users.push({name,email,password:pw});localStorage.setItem('inkwell_users',JSON.stringify(users));
+      sc.textContent='Account ban gaya! Sign in page pe bhej rahe hain...';sc.classList.remove('hidden');
+      document.getElementById('form-register').reset();
+      setTimeout(()=>{switchAuthTab('login');document.getElementById('login-email').value=email},1500);
+    }
+
+    function socialLogin(p){currentUser={name:p+' User',email:p.toLowerCase()+'.user@example.com'};localStorage.setItem('inkwell_user',JSON.stringify(currentUser));updateAuthUI();showToast(p+' se sign in ho gaya!','success');location.hash='home'}
+    function logout(){currentUser=null;localStorage.removeItem('inkwell_user');updateAuthUI();showToast('Sign out ho gaya.','info');location.hash='home'}
+
+    function updateAuthUI(){
+      const bt=document.getElementById('auth-btn-text'),nb=document.getElementById('auth-nav-btn'),ml=document.getElementById('mobile-auth-link');
+      if(currentUser){bt.textContent=currentUser.name.split(' ')[0];nb.onclick=e=>{e.preventDefault();logout()};nb.className='hidden md:inline-flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/[0.08] text-gray-300 text-sm font-semibold px-5 py-2.5 rounded-xl transition-all';ml.textContent='Sign Out';ml.onclick=e=>{e.preventDefault();closeMobileMenu();logout()}}
+      else{bt.textContent='Sign In';nb.onclick=null;nb.href='#login';nb.className='hidden md:inline-flex items-center gap-2 bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-brand-500/20';ml.textContent='Sign In';ml.onclick=e=>{closeMobileMenu()};ml.href='#login'}
+    }
+
+    function togglePassword(id){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password'}
+
+    function sendContactForm(){
+      if(!document.getElementById('contact-name').value.trim()||!document.getElementById('contact-email').value.trim()||!document.getElementById('contact-message').value.trim()){showToast('Sab fields bharna zaroori hai.','error');return}
+      showToast('Message bhej diya! Jald hi reply karenge.','success');
+      document.getElementById('contact-name').value='';document.getElementById('contact-email').value='';document.getElementById('contact-message').value='';
+    }
+
+    function showToast(msg,type='info'){
+      const c=document.getElementById('toast-container'),t=document.createElement('div');
+      const col={success:'border-green-500/20 bg-green-500/10',error:'border-red-500/20 bg-red-500/10',info:'border-brand-500/20 bg-brand-500/10'};
+      const ico={success:'lucide:check-circle',error:'lucide:alert-circle',info:'lucide:info'};
+      const icol={success:'text-green-400',error:'text-red-400',info:'text-brand-400'};
+      t.className='toast-enter pointer-events-auto flex items-center gap-3 border '+col[type]+' backdrop-blur-xl rounded-xl px-5 py-3.5 min-w-[300px] shadow-2xl';
+      t.innerHTML='<span class="iconify '+icol[type]+' text-lg" data-icon="'+ico[type]+'"></span><span class="text-sm text-gray-200 flex-1">'+msg+'</span>';
+      c.appendChild(t);
+      setTimeout(()=>{t.classList.remove('toast-enter');t.classList.add('toast-exit');setTimeout(()=>t.remove(),350)},3000);
+    }
+
+    document.addEventListener('DOMContentLoaded',()=>{
+      navigate(location.hash.slice(1)||'home');
+      updateAuthUI();updateCartUI();renderFeaturedProducts();
+      document.querySelector('.filter-btn[data-filter="all"]')?.classList.add('bg-brand-500/15','text-brand-400','font-semibold');
+      document.querySelector('.price-btn[data-price="all"]')?.classList.add('bg-brand-500/15','text-brand-400','font-semibold');
+    });
+  </script>
+</body>
+</html>
